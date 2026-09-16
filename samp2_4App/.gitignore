@@ -1,0 +1,32 @@
+# Qt编译目录
+build-*
+
+# QtCreator用户配置
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.autosave
+
+# 编译中间文件
+*.moc
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*.o
+*.obj
+
+# 可执行程序与库
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+*.pdb
+
+# 日志
+*.log
+
+# 资源缓存
+*.qmlc
+*.jsc
