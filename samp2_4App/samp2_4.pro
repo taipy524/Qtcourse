@@ -23,6 +23,3 @@ RESOURCES += \
     res.qrc
 
 RC_ICONS = AppIcon.ico
-
-DISTFILES += \
-    .gitignore

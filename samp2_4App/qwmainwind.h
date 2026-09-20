@@ -48,6 +48,7 @@ private slots:
     void on_txtEdit_copyAvailable(bool b);//有文字可copy时更新cut,copy的Enable状态
 
     void on_actToolbarLab_triggered(bool checked); //设置工具栏按钮样式
+    void on_actAbout_triggered(); //关于对话框
 //  自定义槽函数
     void on_spinBoxFontSize_valueChanged(int aFontSize);//改变字体大小的SpinBox的响应
     void on_comboFont_currentIndexChanged(const QString &arg1);//FontCombobox的响应，选择字体名称
