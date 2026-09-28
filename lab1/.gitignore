@@ -66,6 +66,9 @@ CMakeLists.txt.user*
 *.Debug
 *.Release
 
+# 实验1 测试运行日志（每次运行重新生成）
+tests/*.log
+
 # Python byte code
 *.pyc
 

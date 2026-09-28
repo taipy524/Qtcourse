@@ -1,0 +1,26 @@
+﻿
+ID   Name    Mode  Input                    Expected Actual Note       Status
+--   ----    ----  -----                    -------- ------ ----       ------
+T01  加法      mouse 1+2=                     3        3                 PASS  
+T02  减法      mouse 10-3=                    7        7                 PASS  
+T03  乘法      mouse 5*6=                     30       30                PASS  
+T04  除法      mouse 20/4=                    5        5                 PASS  
+T05  小数运算    mouse 1.5+2.5=                 4        4                 PASS  
+T06  重复小数点   mouse 1.2.3                    1.23     1.23              PASS  
+T07  除零      mouse 10/0=                    不能除以0    不能除以0             PASS  
+T08  退格      mouse 12345<<                  123      123               PASS  
+T09  清除      mouse 12345C                   0        0                 PASS  
+T10  连续计算    mouse 10+5=+3=                 18       18                PASS  
+T10b 连续计算继续  mouse 10+5=+3=*2=              36       36                PASS  
+T11  计算后重新输入 mouse 10+5=2                   2        2                 PASS  
+T07b 除零后可恢复  mouse 10/0= 然后点 1、2            12       12     错误提示=不能除以0 PASS  
+T12  键盘运算    key   12{+}5=                  17       17                PASS  
+T13  键盘退格    key   12345{BS}{BS}            123      123               PASS  
+T14  键盘清除    key   12345{ESC}               0        0                 PASS  
+T15  键盘小数与回车 key   1.5{+}2.5{ENTER}         4        4                 PASS  
+T16  键盘乘法    key   5*6{ENTER}               30       30                PASS  
+T17  键盘除零    key   10/0=                    不能除以0    不能除以0             PASS  
+T18  键盘连续计算  key   10{+}5{ENTER}{+}3{ENTER} 18       18                PASS  
+
+
+TOTAL: 20 / 20 PASS
