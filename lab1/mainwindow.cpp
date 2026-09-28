@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QKeyEvent>
+#include <QShowEvent>
 #include <QPushButton>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -14,8 +16,73 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     m_op.clear();
+
+    // 焦点策略：所有子控件都不参与键盘焦点，让主窗口自己接收按键，
+    // 这样无论点过哪个按钮，键盘事件都能到达 keyPressEvent。
+    setFocusPolicy(Qt::StrongFocus);
+    ui->menubar->setFocusPolicy(Qt::NoFocus);
+    ui->statusbar->setFocusPolicy(Qt::NoFocus);
+    setFocus();
+
     setupConnections();
     showText(QStringLiteral("0"));
+}
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
+    setFocus();                              // 窗口显示后重新拿到键盘焦点
+}
+
+/**
+ * @brief 键盘事件入口
+ *
+ * 只做按键到核心函数的映射，不包含任何计算逻辑：
+ * 键盘 1 -> inputDigit("1")，与点击 btn1 走完全相同的路径。
+ */
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    const int key = event->key();
+
+    if (key >= Qt::Key_0 && key <= Qt::Key_9) {
+        // 小键盘按键同样返回 Key_0~Key_9（附带 KeypadModifier）
+        inputDigit(QString::number(key - Qt::Key_0));
+        return;
+    }
+
+    switch (key) {
+    case Qt::Key_Period:
+    case Qt::Key_Comma:
+        inputDot();
+        return;
+    case Qt::Key_Plus:
+        inputOperator(QStringLiteral("+"));
+        return;
+    case Qt::Key_Minus:
+        inputOperator(QStringLiteral("-"));
+        return;
+    case Qt::Key_Asterisk:
+        inputOperator(QStringLiteral("*"));
+        return;
+    case Qt::Key_Slash:
+        inputOperator(QStringLiteral("/"));
+        return;
+    case Qt::Key_Equal:
+    case Qt::Key_Return:
+    case Qt::Key_Enter:
+        calculateResult();
+        return;
+    case Qt::Key_Backspace:
+        backspace();
+        return;
+    case Qt::Key_Escape:
+        clearCalculator();
+        return;
+    default:
+        break;
+    }
+
+    QMainWindow::keyPressEvent(event);       // 其余按键交给基类处理
 }
 
 MainWindow::~MainWindow()

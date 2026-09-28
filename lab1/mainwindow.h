@@ -17,6 +17,11 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+protected:
+    // 键盘事件：与鼠标按钮一样，只负责转发到上面的核心业务函数
+    void keyPressEvent(QKeyEvent *event) override;
+    void showEvent(QShowEvent *event) override;
+
 private:
     // 统一的业务核心函数：鼠标按钮与键盘事件共用
     void setupConnections();
