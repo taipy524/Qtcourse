@@ -24,6 +24,9 @@ private:
     void inputDot();
     void inputOperator(const QString &op);
     void calculateResult();
+    void clearCalculator();
+    void backspace();
+    void showError();
 
     void showText(const QString &text);
     void showValue(double value);
@@ -37,5 +40,6 @@ private:
     QString m_op;          // 当前运算符 + - * /
     bool m_waiting;        // 已按运算符，等待第二个操作数
     bool m_calculated;     // 刚完成一次计算
+    bool m_error;          // 出现错误（如除以 0），等待重新开始
 };
 #endif // MAINWINDOW_H

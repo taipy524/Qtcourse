@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_first(0.0)
     , m_waiting(false)
     , m_calculated(false)
+    , m_error(false)
 {
     ui->setupUi(this);
 
@@ -66,6 +67,8 @@ void MainWindow::setupConnections()
     }
 
     connect(ui->btnEqual, &QPushButton::clicked, this, &MainWindow::calculateResult);
+    connect(ui->btnClear, &QPushButton::clicked, this, &MainWindow::clearCalculator);
+    connect(ui->btnBackspace, &QPushButton::clicked, this, &MainWindow::backspace);
 }
 
 void MainWindow::showText(const QString &text)
@@ -86,6 +89,9 @@ QString MainWindow::displayText() const
  */
 void MainWindow::inputDigit(const QString &digit)
 {
+    if (m_error)
+        clearCalculator();                 // 上次出错，重新开始
+
     QString text = displayText();
 
     if (m_waiting || m_calculated) {   // 开始输入新的操作数
@@ -106,6 +112,9 @@ void MainWindow::inputDigit(const QString &digit)
  */
 void MainWindow::inputDot()
 {
+    if (m_error)
+        clearCalculator();
+
     QString text = displayText();
 
     if (m_waiting || m_calculated) {   // 新操作数以 0. 起头
@@ -152,6 +161,9 @@ double MainWindow::currentOperand() const
  */
 void MainWindow::inputOperator(const QString &op)
 {
+    if (m_error)
+        clearCalculator();
+
     if (m_waiting && !m_op.isEmpty()) {    // 连续多个运算符：换一个即可
         m_op = op;
         return;
@@ -170,11 +182,20 @@ void MainWindow::inputOperator(const QString &op)
  */
 void MainWindow::calculateResult()
 {
+    if (m_error)
+        return;
+
     if (m_op.isEmpty() || m_waiting)
         return;
 
     const double a = m_first;
     const double b = currentOperand();
+
+    if (m_op == QStringLiteral("/") && b == 0.0) {
+        showError();                         // 除以 0：提示并复位
+        return;
+    }
+
     double result = 0.0;
 
     if (m_op == QStringLiteral("+"))
@@ -192,4 +213,50 @@ void MainWindow::calculateResult()
     m_op.clear();
     m_waiting = false;
     m_calculated = true;
+}
+
+/**
+ * @brief 清除 C：界面与内部计算状态一起复位
+ */
+void MainWindow::clearCalculator()
+{
+    m_first = 0.0;
+    m_op.clear();
+    m_waiting = false;
+    m_calculated = false;
+    m_error = false;
+    showText(QStringLiteral("0"));
+}
+
+/**
+ * @brief 退格：删除最后一位；删空后回落到 0，不会出现空字符串
+ */
+void MainWindow::backspace()
+{
+    if (m_error) {
+        clearCalculator();
+        return;
+    }
+
+    QString text = displayText();
+    text.chop(1);
+    if (text.isEmpty())
+        text = QStringLiteral("0");
+
+    showText(text);
+    m_calculated = false;                    // 退格后按“正在输入”处理
+}
+
+/**
+ * @brief 错误提示（除以 0），随后复位到可继续操作的状态
+ */
+void MainWindow::showError()
+{
+    showText(QStringLiteral("不能除以0"));
+
+    m_first = 0.0;
+    m_op.clear();
+    m_waiting = false;
+    m_calculated = false;
+    m_error = true;
 }
