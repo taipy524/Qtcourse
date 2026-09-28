@@ -49,6 +49,23 @@ void MainWindow::setupConnections()
     }
 
     connect(ui->btnDot, &QPushButton::clicked, this, &MainWindow::inputDot);
+
+    struct OperatorBinding {
+        QPushButton *button;
+        const char *op;
+    };
+    const OperatorBinding operators[] = {
+        {ui->btnAdd, "+"}, {ui->btnSub, "-"},
+        {ui->btnMul, "*"}, {ui->btnDiv, "/"},
+    };
+    for (const OperatorBinding &item : operators) {
+        const QString op = QString::fromLatin1(item.op);
+        connect(item.button, &QPushButton::clicked, this, [this, op]() {
+            inputOperator(op);
+        });
+    }
+
+    connect(ui->btnEqual, &QPushButton::clicked, this, &MainWindow::calculateResult);
 }
 
 void MainWindow::showText(const QString &text)
@@ -105,4 +122,74 @@ void MainWindow::inputDot()
 
     text += QLatin1Char('.');
     showText(text);
+}
+
+/**
+ * @brief 显示一个计算结果，去掉无意义的尾随零（2.000000 -> 2）
+ */
+void MainWindow::showValue(double value)
+{
+    if (value == 0.0)
+        value = 0.0;                       // 消除 -0 显示
+    showText(QString::number(value, 'g', 15));
+}
+
+/**
+ * @brief 取当前显示框里的操作数；非法内容按 0 处理
+ */
+double MainWindow::currentOperand() const
+{
+    bool ok = false;
+    const double value = displayText().toDouble(&ok);
+    return ok ? value : 0.0;
+}
+
+/**
+ * @brief 运算符输入
+ *
+ * 处于“等待第二个操作数”时再按运算符，只替换运算符，
+ * 这样连续按多个运算符不会产生非法状态。
+ */
+void MainWindow::inputOperator(const QString &op)
+{
+    if (m_waiting && !m_op.isEmpty()) {    // 连续多个运算符：换一个即可
+        m_op = op;
+        return;
+    }
+
+    m_first = currentOperand();            // 记下第一个操作数
+    m_op = op;
+    m_waiting = true;
+    m_calculated = false;
+}
+
+/**
+ * @brief 等号：完成一次计算
+ *
+ * 没有运算符或还没输入第二个操作数时按等号，直接忽略，不崩溃。
+ */
+void MainWindow::calculateResult()
+{
+    if (m_op.isEmpty() || m_waiting)
+        return;
+
+    const double a = m_first;
+    const double b = currentOperand();
+    double result = 0.0;
+
+    if (m_op == QStringLiteral("+"))
+        result = a + b;
+    else if (m_op == QStringLiteral("-"))
+        result = a - b;
+    else if (m_op == QStringLiteral("*"))
+        result = a * b;
+    else if (m_op == QStringLiteral("/"))
+        result = a / b;
+
+    showValue(result);
+
+    m_first = result;
+    m_op.clear();
+    m_waiting = false;
+    m_calculated = true;
 }

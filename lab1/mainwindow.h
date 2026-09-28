@@ -22,9 +22,13 @@ private:
     void setupConnections();
     void inputDigit(const QString &digit);
     void inputDot();
+    void inputOperator(const QString &op);
+    void calculateResult();
 
     void showText(const QString &text);
+    void showValue(double value);
     QString displayText() const;
+    double currentOperand() const;
 
     Ui::MainWindow *ui;
 
