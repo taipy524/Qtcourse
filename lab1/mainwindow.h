@@ -24,6 +24,7 @@ private:
     void inputDot();
     void inputOperator(const QString &op);
     void calculateResult();
+    bool performCalculation();
     void clearCalculator();
     void backspace();
     void showError();

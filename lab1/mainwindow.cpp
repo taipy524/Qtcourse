@@ -164,12 +164,17 @@ void MainWindow::inputOperator(const QString &op)
     if (m_error)
         clearCalculator();
 
-    if (m_waiting && !m_op.isEmpty()) {    // 连续多个运算符：换一个即可
+    if (m_waiting) {                         // 还没输入第二个操作数：只换运算符
         m_op = op;
         return;
     }
 
-    m_first = currentOperand();            // 记下第一个操作数
+    if (!m_op.isEmpty()) {                   // 已有挂起的运算，先把上一步算出来
+        if (!performCalculation())
+            return;                          // 出错（如除以 0）后停止本次输入
+    }
+
+    m_first = currentOperand();              // 记下第一个操作数
     m_op = op;
     m_waiting = true;
     m_calculated = false;
@@ -188,12 +193,22 @@ void MainWindow::calculateResult()
     if (m_op.isEmpty() || m_waiting)
         return;
 
+    performCalculation();
+}
+
+/**
+ * @brief 真正执行一次二元运算，返回是否成功
+ *
+ * 连续计算（1 + 2 + 3 =）与等号共用这一份代码。
+ */
+bool MainWindow::performCalculation()
+{
     const double a = m_first;
     const double b = currentOperand();
 
     if (m_op == QStringLiteral("/") && b == 0.0) {
         showError();                         // 除以 0：提示并复位
-        return;
+        return false;
     }
 
     double result = 0.0;
@@ -206,6 +221,8 @@ void MainWindow::calculateResult()
         result = a * b;
     else if (m_op == QStringLiteral("/"))
         result = a / b;
+    else
+        return false;
 
     showValue(result);
 
@@ -213,6 +230,7 @@ void MainWindow::calculateResult()
     m_op.clear();
     m_waiting = false;
     m_calculated = true;
+    return true;
 }
 
 /**
