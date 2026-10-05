@@ -17,8 +17,16 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+    QString operand;
+
 private slots:
     void btnNumClicked();
+
+    void on_pushButton_17_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void on_pushButton_3_clicked();
 
 private:
     Ui::MainWindow *ui;
