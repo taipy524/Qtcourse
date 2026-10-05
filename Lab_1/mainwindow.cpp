@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include<QDebug>
+#include<math.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->binMinus, SIGNAL(clicked()), this, SLOT(btnBinaryOperatorClicked()));
     connect(ui->binMultiple, SIGNAL(clicked()), this, SLOT(btnBinaryOperatorClicked()));
     connect(ui->binDivide, SIGNAL(clicked()), this, SLOT(btnBinaryOperatorClicked()));
+
+    connect(ui->btnPercentage, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
+    connect(ui->btnInverse, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
+    connect(ui->btnSquare, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
+    connect(ui->btnSqrt, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -57,6 +63,8 @@ QString MainWindow::calculation(bool *ok)
         else if(op=="÷"){
             result=operand1/operand2;
         }
+
+        operands.push_back(QString::number(result));
 
         ui->statusbar->showMessage(QString("calcuation is in progress : operands is %1,opcodes is %2").arg(operands.size()).arg(opcodes.size()));
     }
@@ -124,6 +132,26 @@ void MainWindow::btnBinaryOperatorClicked()
         QString result=calculation();
 
         ui->lineEdit->setText(result);
+    }
+}
+
+void MainWindow::btnUnaryOperatorClicked()
+{
+    if(operand !=""){
+        double result=operand.toDouble();
+        operand="";
+
+        QString op=qobject_cast<QPushButton*>(sender())->text();
+        if(op=="%")
+            result=result/100.0;
+        else if(op=="1/x")
+            result=1/result;
+        else if(op=="x²")
+            result*=result;
+        else if(op=="²√x")
+            result=sqrt(result);
+
+        ui->lineEdit->setText(QString::number(result));
     }
 }
 
