@@ -29,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnInverse, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
     connect(ui->btnSquare, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
     connect(ui->btnSqrt, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
+
+    connect(ui->btnSign, SIGNAL(clicked()), this, SLOT(btnUnaryOperatorClicked()));
+    connect(ui->btnClear, SIGNAL(clicked()), this, SLOT(btnCE_Clicked()));
+
 }
 
 MainWindow::~MainWindow()
@@ -112,6 +116,8 @@ void MainWindow::on_pushButton_4_clicked()//退格
 void MainWindow::on_pushButton_3_clicked()
 {
     operand.clear();
+    operands.clear();
+    opcodes.clear();
     ui->lineEdit->setText(operand);
 }
 
@@ -139,20 +145,53 @@ void MainWindow::btnUnaryOperatorClicked()
 {
     if(operand !=""){
         double result=operand.toDouble();
-        operand="";
 
         QString op=qobject_cast<QPushButton*>(sender())->text();
         if(op=="%")
+        {
             result=result/100.0;
+            operand = "";
+        }
         else if(op=="1/x")
+        {
+            if(qAbs(result) < 1e-9)
+            {
+                ui->lineEdit->setText("Error");
+                return;
+            }
             result=1/result;
+            operand = "";
+        }
         else if(op=="x²")
+        {
             result*=result;
+            operand = "";
+        }
         else if(op=="²√x")
+        {
+            if(result < 0)
+            {
+                ui->lineEdit->setText("Error");
+                return;
+            }
             result=sqrt(result);
+            operand = "";
+        }
+        else if(op=="+/-")
+        {
+            result = -result;
+            operand = QString::number(result);
+        }
+
 
         ui->lineEdit->setText(QString::number(result));
     }
+}
+
+void MainWindow::btnCE_Clicked()
+{
+    operand.clear();
+    ui->lineEdit->setText("");
 }
 
 void MainWindow::on_btnEqual_clicked()

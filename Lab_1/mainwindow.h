@@ -29,6 +29,7 @@ private slots:
     void btnNumClicked();
     void btnBinaryOperatorClicked();
     void btnUnaryOperatorClicked();
+    void btnCE_Clicked();
 
     void on_pushButton_17_clicked();
 
