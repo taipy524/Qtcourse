@@ -237,7 +237,7 @@
          <number>6</number>
         </property>
         <property name="columnCount">
-         <number>5</number>
+         <number>6</number>
         </property>
         <attribute name="horizontalHeaderVisible">
          <bool>true</bool>
@@ -258,57 +258,125 @@
         <row/>
         <row/>
         <column>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="foreground">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </property>
          <property name="text">
-          <string>列1</string>
+          <string>姓名</string>
          </property>
         </column>
         <column>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="foreground">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </property>
          <property name="text">
-          <string>列2</string>
+          <string>性别</string>
          </property>
         </column>
         <column>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="foreground">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </property>
          <property name="text">
-          <string>列3</string>
+          <string>出生日期</string>
          </property>
         </column>
-        <column/>
-        <column/>
-        <item row="0" column="0">
-         <property name="text">
-          <string>0行，0列</string>
+        <column>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+           <pointsize>11</pointsize>
+          </font>
          </property>
-        </item>
-        <item row="0" column="1">
-         <property name="text">
-          <string>0行，1列</string>
+         <property name="foreground">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
          </property>
-        </item>
-        <item row="0" column="4">
          <property name="text">
-          <string>0行，4列</string>
+          <string>民族</string>
          </property>
-        </item>
-        <item row="1" column="0">
+        </column>
+        <column>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="foreground">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </property>
          <property name="text">
-          <string>1行，0列</string>
+          <string>分数</string>
          </property>
-        </item>
-        <item row="2" column="0">
+        </column>
+        <column>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="foreground">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </property>
          <property name="text">
-          <string>2行，0列</string>
+          <string>是否党员</string>
          </property>
-        </item>
-        <item row="5" column="0">
-         <property name="text">
-          <string>5行，0列</string>
-         </property>
-        </item>
-        <item row="5" column="4">
-         <property name="text">
-          <string>5行，4列</string>
-         </property>
-        </item>
+        </column>
        </widget>
        <widget class="QPlainTextEdit" name="textEdit"/>
       </widget>
