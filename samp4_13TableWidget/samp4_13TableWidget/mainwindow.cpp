@@ -6,6 +6,7 @@
 #include    <QTableWidgetItem>
 #include    <QRandomGenerator>
 #include    <QSplitter>
+#include    <QHeaderView>
 
 
 //为一行的单元格创建 Items
@@ -72,17 +73,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //状态栏初始化创建
     labCellIndex = new QLabel("当前单元格坐标：",this);
-    labCellIndex->setMinimumWidth(550);
+    labCellIndex->setMinimumWidth(300);
 
     labCellType=new QLabel("当前单元格类型：",this);
-    labCellType->setMinimumWidth(200);
+    labCellType->setMinimumWidth(140);
 
     labStudID=new QLabel("学生ID：",this);
-    labStudID->setMinimumWidth(200);
+    labStudID->setMinimumWidth(120);
 
     //作业二：状态栏新增一个QLabel，用于显示选中行学生的籍贯
     labHometown=new QLabel("籍贯：-",this);
-    labHometown->setMinimumWidth(200);
+    labHometown->setMinimumWidth(170);
 
     ui->statusBar->addWidget(labCellIndex); //添加到状态栏
     ui->statusBar->addWidget(labCellType);
@@ -93,7 +94,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_selfId = QStringLiteral("2024414300107");
 
     //作业二：让右侧表格占据更多高度，保证 5 行名单全部可见
-    ui->splitter->setSizes(QList<int>() << 250 << 90);
+    ui->splitter->setSizes(QList<int>() << 480 << 170);
+
+    //作业二：最后一列不拉伸，避免“修读性质”列变形
+    ui->tableInfo->horizontalHeader()->setStretchLastSection(false);
 }
 
 MainWindow::~MainWindow()

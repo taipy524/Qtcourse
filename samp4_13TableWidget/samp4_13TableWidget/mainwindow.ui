@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
-    <height>486</height>
+    <width>1180</width>
+    <height>760</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1000</width>
+    <height>640</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -40,7 +46,7 @@
       <widget class="QGroupBox" name="groupBox">
        <property name="maximumSize">
         <size>
-         <width>300</width>
+         <width>340</width>
          <height>16777215</height>
         </size>
        </property>
