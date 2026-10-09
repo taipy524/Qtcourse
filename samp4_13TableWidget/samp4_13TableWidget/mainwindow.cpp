@@ -257,8 +257,18 @@ void MainWindow::on_tableInfo_currentCellChanged(int currentRow, int currentColu
     labCellType->setText(QString::asprintf("当前单元格类型：%d",cellType));
 
     item=ui->tableInfo->item(currentRow,MainWindow::colName);   //取当前行第1列的单元格的item
-    uint ID=item->data(Qt::UserRole).toUInt();        //读取用户数据
-    labStudID->setText(QString::asprintf("学生ID：%d",ID));      //学生ID
+    if (ui->tableInfo->columnCount()==RosterColumnCount)
+    {
+        //作业二：名单模式下第1列是学号，UserRole里存的是学号字符串
+        const QString sid = item ? item->data(Qt::UserRole).toString() : QString();
+        labStudID->setText(QStringLiteral("学生ID：")
+                           + (sid.isEmpty() ? QStringLiteral("0") : sid));
+    }
+    else
+    {
+        uint ID=item->data(Qt::UserRole).toUInt();        //读取用户数据
+        labStudID->setText(QString::asprintf("学生ID：%d",ID));      //学生ID
+    }
 
     //作业二：显示当前行学生的籍贯。名单模式下籍贯存放在“姓名”item的UserRole里
     QString hometown;
@@ -392,6 +402,8 @@ void MainWindow::buildRosterTable()
             QString::fromUtf8(row.id), MainWindow::ctName);
         item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        //把学号作为“学生ID”存进 UserRole（用字符串，学号超出 uint 范围）
+        item->setData(Qt::UserRole, QString::fromUtf8(row.id));
         ui->tableInfo->setItem(r, colRosterId, item);
         QTableWidgetItem *idItem = item;
 
