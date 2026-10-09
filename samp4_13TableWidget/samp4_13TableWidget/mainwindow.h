@@ -20,12 +20,22 @@ private:
     //  各字段在表格中的列号
     enum    FieldColNum{colName=0, colSex,colBirth,colNation,colScore,colPartyM};
 
+    //  作业二：学生名单模式下表格的列定义
+    enum    RosterColumn{RosterColumnCount=7, colRosterId=0, colRosterName,
+                         colRosterSex, colRosterClass, colRosterDept,
+                         colRosterMajor, colRosterNature};
+
     QLabel  *labCellIndex; //状态栏上用于显示单元格的行号、列号
     QLabel  *labCellType;  //状态栏上用于显示单元格的type
     QLabel  *labStudID;    //状态栏上用于显示单元格的data,
+    QLabel  *labHometown;  //状态栏上用于显示学生籍贯（作业二新增）
+
+    QString  m_selfId;     //本人学号，用于定位“前两行+自己+后两行”
 
     void    createItemsARow(int rowNo,QString name,QString sex,QDate birth,
                             QString nation,bool isPM,int score); //为某一行创建items
+
+    void    buildRosterTable();  //按学号重新设置学生名单表格（作业二核心逻辑）
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -62,6 +72,8 @@ private slots:
     void on_btnAutoHeght_clicked();
 
     void on_btnAutoWidth_clicked();
+
+    void on_actSetRoster_triggered();   //工具栏“设置学生名单”QAction（作业二新增）
 
 private:
     Ui::MainWindow *ui;
