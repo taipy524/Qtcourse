@@ -1,9 +1,11 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "rosterdata.h"
 
 #include    <QDate>
 #include    <QTableWidgetItem>
 #include    <QRandomGenerator>
+#include    <QSplitter>
 
 
 //为一行的单元格创建 Items
@@ -78,9 +80,20 @@ MainWindow::MainWindow(QWidget *parent) :
     labStudID=new QLabel("学生ID：",this);
     labStudID->setMinimumWidth(200);
 
+    //作业二：状态栏新增一个QLabel，用于显示选中行学生的籍贯
+    labHometown=new QLabel("籍贯：-",this);
+    labHometown->setMinimumWidth(200);
+
     ui->statusBar->addWidget(labCellIndex); //添加到状态栏
     ui->statusBar->addWidget(labCellType);
     ui->statusBar->addWidget(labStudID);
+    ui->statusBar->addWidget(labHometown);
+
+    //本人学号：用于在名单中定位“前两行 + 自己 + 后两行”
+    m_selfId = QStringLiteral("2024414300107");
+
+    //作业二：让右侧表格占据更多高度，保证 5 行名单全部可见
+    ui->splitter->setSizes(QList<int>() << 250 << 90);
 }
 
 MainWindow::~MainWindow()
@@ -92,6 +105,13 @@ MainWindow::~MainWindow()
 //设置水平表头
 void MainWindow::on_btnSetHeader_clicked()
 {
+    //作业二：学生名单模式下列结构固定，不允许被旧功能覆盖
+    if (ui->tableInfo->columnCount()==RosterColumnCount)
+    {
+        ui->statusBar->showMessage(QStringLiteral("当前为学生名单模式，此操作不适用"),3000);
+        return;
+    }
+
     QStringList headerText;
     headerText<<"姓名"<<"性别"<<"出生日期"<<"民族"<<"分数"<<"是否党员";
     //    ui->tableInfo->setHorizontalHeaderLabels(headerText); //只设置标题
@@ -111,6 +131,12 @@ void MainWindow::on_btnSetHeader_clicked()
 //设置行数,设置的行数为数据区的行数，不含表头
 void MainWindow::on_btnSetRows_clicked()
 {
+    if (ui->tableInfo->columnCount()==RosterColumnCount)
+    {
+        ui->statusBar->showMessage(QStringLiteral("当前为学生名单模式，此操作不适用"),3000);
+        return;
+    }
+
     ui->tableInfo->setRowCount(ui->spinRowCount->value());//设置数据区行数
     ui->tableInfo->setAlternatingRowColors(ui->chkBoxRowColor->isChecked()); //设置交替行背景颜色
 }
@@ -119,6 +145,12 @@ void MainWindow::on_btnSetRows_clicked()
 //初始化表格数据
 void MainWindow::on_btnIniData_clicked()
 {
+    if (ui->tableInfo->columnCount()==RosterColumnCount)
+    {
+        ui->statusBar->showMessage(QStringLiteral("当前为学生名单模式，此操作不适用"),3000);
+        return;
+    }
+
     QDate   birth(2001,4,6);        //初始化一个日期
     ui->tableInfo->clearContents(); //只清除工作区，不清除表头
     for (int i=0; i<ui->tableInfo->rowCount(); i++)
@@ -171,23 +203,36 @@ void MainWindow::on_rBtnSelectRow_clicked()
 //将 QTableWidget的所有行的内容提取字符串，显示在QPlainTextEdit里
 void MainWindow::on_btnReadToEdit_clicked()
 {
-//    QString str;
     QTableWidgetItem    *item;
 
     ui->textEdit->clear();  //文本编辑器清空
     for (int i=0;i<ui->tableInfo->rowCount();i++)   //逐行处理
     {
         QString str=QString::asprintf("第 %d 行： ",i+1);
-        for (int j=0;j<ui->tableInfo->columnCount()-1;j++) //逐列处理，但最后一列是check型，单独处理
+
+        if (ui->tableInfo->columnCount()==RosterColumnCount)
         {
-            item=ui->tableInfo->item(i,j);      //获取单元格的item
-            str=str+item->text()+"   ";         //字符串连接
+            //作业二：名单模式，7列全部按文本输出
+            for (int j=0;j<ui->tableInfo->columnCount();j++)
+            {
+                item=ui->tableInfo->item(i,j);
+                str=str+(item?item->text():QString())+"   ";
+            }
         }
-        item=ui->tableInfo->item(i,colPartyM);  //最后一列，党员
-        if (item->checkState()==Qt::Checked)    //根据check状态显示文字
-            str=str+"党员";
         else
-            str=str+"群众";
+        {
+            for (int j=0;j<ui->tableInfo->columnCount()-1;j++) //逐列处理，但最后一列是check型，单独处理
+            {
+                item=ui->tableInfo->item(i,j);      //获取单元格的item
+                if (item)
+                    str=str+item->text()+"   ";     //字符串连接
+            }
+            item=ui->tableInfo->item(i,colPartyM);  //最后一列，党员
+            if (item && item->checkState()==Qt::Checked) //根据check状态显示文字
+                str=str+"党员";
+            else
+                str=str+"群众";
+        }
         ui->textEdit->appendPlainText(str);     //添加到编辑框作为一行
     }
 }
@@ -210,6 +255,16 @@ void MainWindow::on_tableInfo_currentCellChanged(int currentRow, int currentColu
     item=ui->tableInfo->item(currentRow,MainWindow::colName);   //取当前行第1列的单元格的item
     uint ID=item->data(Qt::UserRole).toUInt();        //读取用户数据
     labStudID->setText(QString::asprintf("学生ID：%d",ID));      //学生ID
+
+    //作业二：显示当前行学生的籍贯。名单模式下籍贯存放在“姓名”item的UserRole里
+    QString hometown;
+    if (ui->tableInfo->columnCount()==RosterColumnCount)
+    {
+        QTableWidgetItem *nameItem=ui->tableInfo->item(currentRow,colRosterName);
+        if (nameItem)
+            hometown=nameItem->data(Qt::UserRole).toString();
+    }
+    labHometown->setText(QStringLiteral("籍贯：")+(hometown.isEmpty()?QStringLiteral("-"):hometown));
 }
 
 //插入一行
@@ -246,4 +301,157 @@ void MainWindow::on_btnAutoHeght_clicked()
 void MainWindow::on_btnAutoWidth_clicked()
 {
     ui->tableInfo->resizeColumnsToContents();
+}
+
+/**
+ * 作业二：工具栏“设置学生名单”按钮的槽函数。
+ * 按本人学号在周一/周四两份点名册里定位，取“前两行 + 自己 + 后两行”共 5 行，
+ * 重新设置右侧 tableWidget 的内容（7 列），并把本人学号、姓名的单元格设为粗体红色。
+ */
+void MainWindow::on_actSetRoster_triggered()
+{
+    buildRosterTable();
+}
+
+void MainWindow::buildRosterTable()
+{
+    //表头文字（与作业要求一致）
+    const char *headerText[RosterColumnCount] = {
+        "学号", "姓名", "性别", "行政班级", "院(系)/部", "专业", "修读性质"
+    };
+
+    //1. 在周一、周四两份名单里查找本人学号
+    const RosterRow *rows = nullptr;
+    int rowCount = 0;
+    int selfIndex = -1;
+
+    for (int i = 0; i < kMondayRosterCount && selfIndex < 0; ++i)
+        if (m_selfId == QString::fromUtf8(kMondayRoster[i].id))
+            selfIndex = i;
+    if (selfIndex >= 0)
+    {
+        rows = kMondayRoster;
+        rowCount = kMondayRosterCount;
+    }
+    else
+    {
+        for (int i = 0; i < kThursdayRosterCount && selfIndex < 0; ++i)
+            if (m_selfId == QString::fromUtf8(kThursdayRoster[i].id))
+                selfIndex = i;
+        if (selfIndex >= 0)
+        {
+            rows = kThursdayRoster;
+            rowCount = kThursdayRosterCount;
+        }
+    }
+
+    if (selfIndex < 0)
+    {
+        ui->statusBar->showMessage(
+            QStringLiteral("在点名册中未找到学号 %1").arg(m_selfId), 5000);
+        return;
+    }
+
+    //2. 取“前两行 + 自己 + 后两行”，左右边界不足 5 行时向内收缩
+    const int rowSpan = 5;
+    int begin = selfIndex - 2;
+    if (begin + rowSpan > rowCount)
+        begin = rowCount - rowSpan;
+    if (begin < 0)
+        begin = 0;
+    const int selfRow = selfIndex - begin;    //本人在表格中的行号
+
+    //3. 重建表格：5 行 7 列
+    ui->tableInfo->clear();                   //同时清除表头与所有 item
+    ui->tableInfo->setColumnCount(RosterColumnCount);
+    ui->tableInfo->setRowCount(rowSpan);
+
+    for (int c = 0; c < RosterColumnCount; ++c)
+    {
+        QTableWidgetItem *headerItem = new QTableWidgetItem(QString::fromUtf8(headerText[c]));
+        QFont font = headerItem->font();
+        font.setBold(true);
+        font.setPointSize(11);
+        headerItem->setForeground(QBrush(Qt::red));
+        headerItem->setFont(font);
+        ui->tableInfo->setHorizontalHeaderItem(c, headerItem);
+    }
+
+    //4. 逐行填入数据
+    for (int r = 0; r < rowSpan; ++r)
+    {
+        const RosterRow &row = rows[begin + r];
+        const QString sex = QString::fromUtf8(row.sex);
+
+        //学号
+        QTableWidgetItem *item = new QTableWidgetItem(
+            QString::fromUtf8(row.id), MainWindow::ctName);
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        ui->tableInfo->setItem(r, colRosterId, item);
+        QTableWidgetItem *idItem = item;
+
+        //姓名：附带籍贯信息（存进 UserRole）
+        item = new QTableWidgetItem(QString::fromUtf8(row.name), MainWindow::ctName);
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        item->setData(Qt::UserRole, QString::fromUtf8(row.hometown));
+        ui->tableInfo->setItem(r, colRosterName, item);
+        QTableWidgetItem *nameItem = item;
+
+        //性别：带男/女图标，不允许编辑
+        item = new QTableWidgetItem(sex, MainWindow::ctSex);
+        QIcon icon;
+        icon.addFile(sex == QStringLiteral("女") ? ":/images/icons/girl.ico"
+                                                 : ":/images/icons/boy.ico");
+        item->setIcon(icon);
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        ui->tableInfo->setItem(r, colRosterSex, item);
+
+        //行政班级
+        item = new QTableWidgetItem(QString::fromUtf8(row.cls));
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->tableInfo->setItem(r, colRosterClass, item);
+
+        //院(系)/部
+        item = new QTableWidgetItem(QString::fromUtf8(row.dept));
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->tableInfo->setItem(r, colRosterDept, item);
+
+        //专业
+        item = new QTableWidgetItem(QString::fromUtf8(row.major));
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->tableInfo->setItem(r, colRosterMajor, item);
+
+        //修读性质
+        item = new QTableWidgetItem(QString::fromUtf8(row.nature));
+        item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->tableInfo->setItem(r, colRosterNature, item);
+
+        //本人行：学号与姓名单元格设为粗体、红色
+        if (r == selfRow)
+        {
+            for (QTableWidgetItem *selfItem : {idItem, nameItem})
+            {
+                QFont font = selfItem->font();
+                font.setBold(true);
+                selfItem->setFont(font);
+                selfItem->setForeground(QBrush(Qt::red));
+            }
+        }
+    }
+
+    //5. 列宽与选中方式
+    ui->tableInfo->resizeColumnsToContents();
+    for (int c = 0; c < RosterColumnCount; ++c)
+        if (ui->tableInfo->columnWidth(c) > 180)
+            ui->tableInfo->setColumnWidth(c, 180);   //过宽的列收窄，避免占满整屏
+    ui->tableInfo->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    //6. 不自动选中本人行，保证“粗体红色”清晰可见；籍贯等选中行后再显示
+    ui->tableInfo->clearSelection();
+    ui->tableInfo->setCurrentItem(nullptr);
+    labHometown->setText(QStringLiteral("籍贯：-"));
+    ui->statusBar->clearMessage();   //不能用临时消息，否则会遮住状态栏上的籍贯标签
 }
