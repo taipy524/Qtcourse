@@ -98,6 +98,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //作业二：最后一列不拉伸，避免“修读性质”列变形
     ui->tableInfo->horizontalHeader()->setStretchLastSection(false);
+
+    //作业二：初始 6 列均匀铺满表格宽度，避免“出生日期/是否党员”等表头被截断
+    ui->tableInfo->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 MainWindow::~MainWindow()
@@ -459,6 +462,7 @@ void MainWindow::buildRosterTable()
     }
 
     //5. 列宽与选中方式
+    ui->tableInfo->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     ui->tableInfo->resizeColumnsToContents();
     for (int c = 0; c < RosterColumnCount; ++c)
         if (ui->tableInfo->columnWidth(c) > 180)
