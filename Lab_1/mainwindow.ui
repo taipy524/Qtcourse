@@ -11,7 +11,136 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>计算器-雷语-2024414300107</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* ========== 全局基础按钮：白底 ========== */
+QPushButton{
+    font-size:20pt;
+    background-color:white;
+    border:none;
+    border-radius:2px;
+}
+
+QPushButton:hover{
+    background-color:#b9e8b9;  /* 淡绿hover */
+    color:black;
+}
+
+QPushButton:pressed{
+    background-color:#d8c8e8; /* 淡紫按下 */
+    color:black;
+}
+
+/* ========== 顶部显示屏 lineEdit ========== */
+QLineEdit{
+    font-size:45pt;
+    border:none;
+    background-color:#f0f0f0;
+    text-align:right;
+    padding-right:12px;
+}
+
+/* ========== 等于号 btnEqual 蓝色按钮 ========== */
+#btnEqual{
+    background-color:#73a8e8;
+    color:white;
+}
+#btnEqual:hover{
+    background-color:#89b8ee;
+}
+#btnEqual:pressed{
+    background-color:#6098dd;
+}
+
+/* ========== 第1行：%、CE、C、退格(pushButton_4) 灰底 ========== */
+#btnPercentage,
+#pushButton_3,
+#btnClear,
+#pushButton_4{
+    background-color:#f6f6f6;
+}
+
+#btnPercentage:hover,
+#pushButton_3:hover,
+#btnClear:hover,
+#pushButton_4:hover{
+    background-color:#b9e8b9;
+}
+#btnPercentage:pressed,
+#pushButton_3:pressed,
+#btnClear:pressed,
+#pushButton_4:pressed{
+    background-color:#d8c8e8;
+}
+
+/* ========== 第2行：1/x、x²、²√x、÷ 灰底 ========== */
+#btnInverse,
+#btnSquare,
+#btnSqrt,
+#binDivide{
+    background-color:#f6f6f6;
+}
+#btnInverse:hover,
+#btnSquare:hover,
+#btnSqrt:hover,
+#binDivide:hover{
+    background-color:#b9e8b9;
+}
+#btnInverse:pressed,
+#btnSquare:pressed,
+#btnSqrt:pressed,
+#binDivide:pressed{
+    background-color:#d8c8e8;
+}
+
+/* ========== 第4列运算符：÷、×、−、+ 灰底 ========== */
+#binDivide,
+#binMultiple,
+#binMinus,
+#binPlus{
+    background-color:#f6f6f6;
+}
+#binDivide:hover,
+#binMultiple:hover,
+#binMinus:hover,
+#binPlus:hover{
+    background-color:#b9e8b9;
+}
+#binDivide:pressed,
+#binMultiple:pressed,
+#binMinus:pressed,
+#binPlus:pressed{
+    background-color:#d8c8e8;
+}
+
+/* ========== 退格键 pushButton_4 灰底 ========== */
+#pushButton_4{
+    background-color:#f6f6f6;
+}
+#pushButton_4:hover{
+    background-color:#b9e8b9;
+}
+#pushButton_4:pressed{
+    background-color:#d8c8e8;
+}
+
+/* ========== 小数点 pushButton_17 白底 ========== */
+#pushButton_17{
+    background-color:white;
+}
+#pushButton_17:hover{
+    background-color:#b9e8b9;
+}
+#pushButton_17:pressed{
+    background-color:#d8c8e8;
+}
+
+/* ========== 主窗口背景色 ========== */
+QMainWindow{
+    background-color:#f0f0f0;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -341,6 +470,9 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <property name="text">
          <string>%</string>

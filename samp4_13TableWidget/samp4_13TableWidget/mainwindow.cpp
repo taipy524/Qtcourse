@@ -30,7 +30,7 @@ void MainWindow::createItemsARow(int rowNo,QString name,QString sex,QDate birth,
     item=new  QTableWidgetItem(sex,MainWindow::ctSex);      //type为MainWindow::ctSex
     item->setIcon(icon);
     item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    Qt::ItemFlags flags=Qt::ItemIsSelectable |Qt::ItemIsEnabled;    //不允许编辑
+    Qt::ItemFlags flags=Qt::ItemIsSelectable |Qt::ItemIsEnabled;
     item->setFlags(flags);
     ui->tableInfo->setItem(rowNo,MainWindow::colSex,item);  //为单元格设置Item
 
@@ -41,7 +41,7 @@ void MainWindow::createItemsARow(int rowNo,QString name,QString sex,QDate birth,
     ui->tableInfo->setItem(rowNo,MainWindow::colBirth,item);
 
     //民族
-    item=new  QTableWidgetItem(nation,MainWindow::ctNation);        //type为MainWindow::ctNation
+    item=new  QTableWidgetItem(nation,MainWindow::ctNation);
     item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     ui->tableInfo->setItem(rowNo,MainWindow::colNation,item);
 
@@ -81,25 +81,20 @@ MainWindow::MainWindow(QWidget *parent) :
     labStudID=new QLabel("学生ID：",this);
     labStudID->setMinimumWidth(120);
 
-    //作业二：状态栏新增一个QLabel，用于显示选中行学生的籍贯
+    //状态栏新增一个QLabel，用于显示选中行学生的籍贯
     labHometown=new QLabel("籍贯：-",this);
     labHometown->setMinimumWidth(170);
 
-    ui->statusBar->addWidget(labCellIndex); //添加到状态栏
+    ui->statusBar->addWidget(labCellIndex);
     ui->statusBar->addWidget(labCellType);
     ui->statusBar->addWidget(labStudID);
     ui->statusBar->addWidget(labHometown);
 
-    //本人学号：用于在名单中定位“前两行 + 自己 + 后两行”
     m_selfId = QStringLiteral("2024414300107");
 
-    //作业二：让右侧表格占据更多高度，保证 5 行名单全部可见
+
     ui->splitter->setSizes(QList<int>() << 480 << 170);
-
-    //作业二：最后一列不拉伸，避免“修读性质”列变形
     ui->tableInfo->horizontalHeader()->setStretchLastSection(false);
-
-    //作业二：初始 6 列均匀铺满表格宽度，避免“出生日期/是否党员”等表头被截断
     ui->tableInfo->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
@@ -127,11 +122,11 @@ void MainWindow::on_btnSetHeader_clicked()
     {
         QTableWidgetItem *headerItem=new QTableWidgetItem(headerText.at(i));
         QFont font=headerItem->font();   //获取原有字体设置
-        font.setBold(true);              //设置为粗体
-        font.setPointSize(11);           //字体大小
-        headerItem->setForeground(QBrush(Qt::red));  //设置文字颜色
-        headerItem->setFont(font);       //设置字体
-        ui->tableInfo->setHorizontalHeaderItem(i,headerItem);    //设置表头单元格的item
+        font.setBold(true);
+        font.setPointSize(11);
+        headerItem->setForeground(QBrush(Qt::red));
+        headerItem->setFont(font);
+        ui->tableInfo->setHorizontalHeaderItem(i,headerItem);
     }
 }
 
@@ -262,7 +257,7 @@ void MainWindow::on_tableInfo_currentCellChanged(int currentRow, int currentColu
     item=ui->tableInfo->item(currentRow,MainWindow::colName);   //取当前行第1列的单元格的item
     if (ui->tableInfo->columnCount()==RosterColumnCount)
     {
-        //作业二：名单模式下第1列是学号，UserRole里存的是学号字符串
+        //名单模式下第1列是学号，UserRole里存的是学号字符串
         const QString sid = item ? item->data(Qt::UserRole).toString() : QString();
         labStudID->setText(QStringLiteral("学生ID：")
                            + (sid.isEmpty() ? QStringLiteral("0") : sid));
@@ -273,7 +268,7 @@ void MainWindow::on_tableInfo_currentCellChanged(int currentRow, int currentColu
         labStudID->setText(QString::asprintf("学生ID：%d",ID));      //学生ID
     }
 
-    //作业二：显示当前行学生的籍贯。名单模式下籍贯存放在“姓名”item的UserRole里
+    //显示当前行学生的籍贯。名单模式下籍贯存放在“姓名”item的UserRole里
     QString hometown;
     if (ui->tableInfo->columnCount()==RosterColumnCount)
     {
@@ -320,11 +315,7 @@ void MainWindow::on_btnAutoWidth_clicked()
     ui->tableInfo->resizeColumnsToContents();
 }
 
-/**
- * 作业二：工具栏“设置学生名单”按钮的槽函数。
- * 按本人学号在周一/周四两份点名册里定位，取“前两行 + 自己 + 后两行”共 5 行，
- * 重新设置右侧 tableWidget 的内容（7 列），并把本人学号、姓名的单元格设为粗体红色。
- */
+
 void MainWindow::on_actSetRoster_triggered()
 {
     buildRosterTable();
@@ -332,7 +323,7 @@ void MainWindow::on_actSetRoster_triggered()
 
 void MainWindow::buildRosterTable()
 {
-    //表头文字（与作业要求一致）
+    //表头文字
     const char *headerText[RosterColumnCount] = {
         "学号", "姓名", "性别", "行政班级", "院(系)/部", "专业", "修读性质"
     };
@@ -410,7 +401,7 @@ void MainWindow::buildRosterTable()
         ui->tableInfo->setItem(r, colRosterId, item);
         QTableWidgetItem *idItem = item;
 
-        //姓名：附带籍贯信息（存进 UserRole）
+        //姓名：附带籍贯信息
         item = new QTableWidgetItem(QString::fromUtf8(row.name), MainWindow::ctName);
         item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -433,7 +424,7 @@ void MainWindow::buildRosterTable()
         item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         ui->tableInfo->setItem(r, colRosterClass, item);
 
-        //院(系)/部
+        //院系
         item = new QTableWidgetItem(QString::fromUtf8(row.dept));
         item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         ui->tableInfo->setItem(r, colRosterDept, item);
@@ -448,7 +439,7 @@ void MainWindow::buildRosterTable()
         item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         ui->tableInfo->setItem(r, colRosterNature, item);
 
-        //本人行：学号与姓名单元格设为粗体、红色
+        //学号与姓名单元格设为粗体、红色
         if (r == selfRow)
         {
             for (QTableWidgetItem *selfItem : {idItem, nameItem})
@@ -466,12 +457,12 @@ void MainWindow::buildRosterTable()
     ui->tableInfo->resizeColumnsToContents();
     for (int c = 0; c < RosterColumnCount; ++c)
         if (ui->tableInfo->columnWidth(c) > 180)
-            ui->tableInfo->setColumnWidth(c, 180);   //过宽的列收窄，避免占满整屏
+            ui->tableInfo->setColumnWidth(c, 180);
     ui->tableInfo->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    //6. 不自动选中本人行，保证“粗体红色”清晰可见；籍贯等选中行后再显示
+    //6. 籍贯等选中行后再显示
     ui->tableInfo->clearSelection();
     ui->tableInfo->setCurrentItem(nullptr);
     labHometown->setText(QStringLiteral("籍贯：-"));
-    ui->statusBar->clearMessage();   //不能用临时消息，否则会遮住状态栏上的籍贯标签
+    ui->statusBar->clearMessage();
 }
