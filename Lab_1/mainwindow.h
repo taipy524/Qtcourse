@@ -27,6 +27,7 @@ public:
     QStack<QString>operands;
     QStack<QString>opcodes;
     QMap<int,QPushButton*>digitBTNs;
+    QMap<int,QPushButton*>symbolBTNs;   // 非数字符号键 -> 按钮
     QString calculation(bool *ok=NULL);
 
 private slots:

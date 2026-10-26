@@ -19,8 +19,27 @@ MainWindow::MainWindow(QWidget *parent)
                   {Qt::Key_7, ui->btnNum7},
                   {Qt::Key_8, ui->btnNum8},
                   {Qt::Key_9, ui->btnNum9},
-
                  };
+
+    symbolBTNs={
+                {Qt::Key_Plus,      ui->binPlus},       // Shift+=
+                {Qt::Key_Minus,     ui->binMinus},      // - 与小键盘 -
+                {Qt::Key_Asterisk,  ui->binMultiple},   // * 与小键盘 *
+                {Qt::Key_Slash,     ui->binDivide},     // /
+                {Qt::Key_Equal,     ui->btnEqual},      // =
+                {Qt::Key_Return,    ui->btnEqual},      // 主键盘 Enter
+                {Qt::Key_Enter,     ui->btnEqual},      // 小键盘 Enter
+                {Qt::Key_Period,    ui->pushButton_17}, // . 与小键盘 .
+                {Qt::Key_Comma,     ui->pushButton_17}, // , 当作小数点别名
+                {Qt::Key_Percent,   ui->btnPercentage}, // %（Shift+5）
+                {Qt::Key_Backspace, ui->pushButton_4},  // 退格
+                {Qt::Key_Escape,    ui->pushButton_3},  // Esc -> C 全清
+                {Qt::Key_Delete,    ui->btnClear},      // Del -> CE 清当前输入
+                {Qt::Key_F9,        ui->btnSign},       // +/-（Windows 计算器惯例）
+                {Qt::Key_R,         ui->btnInverse},    // 1/x
+                {Qt::Key_At,        ui->btnSquare},     // x²（Shift+2）
+                {Qt::Key_Q,         ui->btnSqrt},       // ²√x
+               };
 
     foreach (auto btn, digitBTNs) {
          connect(btn, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
@@ -82,6 +101,14 @@ QString MainWindow::calculation(bool *ok)
             result=operand1*operand2;
         }
         else if(op=="÷"){
+            //除数为0：清空计算状态并返回错误提示，界面可直接开始新算式
+            if(qAbs(operand2) < 1e-12){
+                operands.clear();
+                opcodes.clear();
+                operand.clear();
+                ui->statusbar->showMessage(QStringLiteral("错误：除数不能为0"));
+                return QStringLiteral("不能除以0");
+            }
             result=operand1/operand2;
         }
 
@@ -227,6 +254,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     foreach (auto btnKey, digitBTNs.keys()) {
         if(event->key()==btnKey)
             digitBTNs[btnKey]->animateClick(100);
+    }
+
+    // 非数字符号键：+ - * / = . % 退格 Esc 等
+    foreach (auto btnKey, symbolBTNs.keys()) {
+        if(event->key()==btnKey)
+            symbolBTNs[btnKey]->animateClick(100);
     }
 
 }
