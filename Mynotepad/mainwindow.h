@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QLabel>
 
+class searchDialog;
+class replaceDialog;
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -18,8 +21,18 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+private slots:
+    void on_actionAbout_triggered();
+    void showFindDialog();
+    void showReplaceDialog();
+
 private:
+    void prefillFindText();
+
     Ui::MainWindow *ui;
+
+    searchDialog *m_findDialog = nullptr;
+    replaceDialog *m_replaceDialog = nullptr;
 
     QLabel statusCursorLabel;
     QLabel statusLabel;

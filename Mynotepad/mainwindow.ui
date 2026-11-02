@@ -66,6 +66,9 @@
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
+    <addaction name="actionFind"/>
+    <addaction name="actionReplace"/>
+    <addaction name="separator"/>
     <addaction name="actionSelectAll"/>
    </widget>
    <widget class="QMenu" name="menuFormat">
@@ -79,16 +82,9 @@
     <addaction name="actionWrapLine"/>
     <addaction name="actionLineNumber"/>
    </widget>
-   <widget class="QMenu" name="menuSearch">
-    <property name="title">
-     <string>查找（&amp;S）</string>
-    </property>
-    <addaction name="actionFind"/>
-    <addaction name="actionReplace"/>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>视图（&amp;V）</string>
+     <string>查看（&amp;V）</string>
     </property>
     <addaction name="actionToolBar"/>
     <addaction name="actionStatusBar"/>
@@ -102,7 +98,6 @@
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuFormat"/>
-   <addaction name="menuSearch"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -131,7 +126,9 @@
    <addaction name="separator"/>
    <addaction name="actionFont"/>
    <addaction name="actionTextColor"/>
+   <addaction name="actionBackgroundColor"/>
    <addaction name="actionWrapLine"/>
+   <addaction name="actionLineNumber"/>
    <addaction name="separator"/>
    <addaction name="actionFind"/>
    <addaction name="actionReplace"/>
@@ -407,6 +404,9 @@
    </property>
    <property name="toolTip">
     <string>显示或隐藏行号</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
