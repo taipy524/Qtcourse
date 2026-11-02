@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>485</width>
-     <height>18</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -229,7 +229,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>自动保存（每 1 分钟）</string>
+    <string>自动保存（每 10 秒）</string>
    </property>
    <property name="toolTip">
     <string>每分钟自动保存已修改的文件</string>
@@ -535,7 +535,6 @@
    <class>CodeEditor</class>
    <extends>QPlainTextEdit</extends>
    <header>codeeditor.h</header>
-   <container>0</container>
   </customwidget>
  </customwidgets>
  <resources>

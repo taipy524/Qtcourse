@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 定时自动保存
     m_autoSaveTimer = new QTimer(this);
-    m_autoSaveTimer->setInterval(60 * 1000);
+    m_autoSaveTimer->setInterval(10 * 1000);
     connect(m_autoSaveTimer, &QTimer::timeout, this, &MainWindow::autoSave);
     connect(ui->actionAutoSave, &QAction::toggled, m_autoSaveTimer, [this](bool enabled) {
         if (enabled)
