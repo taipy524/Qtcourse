@@ -8,8 +8,8 @@
 // 只改这两个常量即可，欢迎页与主窗口状态栏会自动同步。
 // ---------------------------------------------------------------------------
 namespace AppInfo {
-static const QString kStudentId   = QStringLiteral("2022000000");   // TODO: 改成你的学号
-static const QString kStudentName = QStringLiteral("请填写姓名");    // TODO: 改成你的姓名
+static const QString kStudentId   = QStringLiteral("2024414300107");   // 学号
+static const QString kStudentName = QStringLiteral("雷语");             // 姓名
 static const QString kAppTitle    = QStringLiteral("医院诊疗系统 - 用户信息管理");
 }
 
