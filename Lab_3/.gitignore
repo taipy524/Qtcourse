@@ -1,0 +1,14 @@
+build*/
+debug/
+release/
+*.o
+*.obj
+moc_*
+ui_*
+qrc_*
+Makefile
+Makefile.*
+.qmake.stash
+*.pro.user
+*.pro.user.*
+*.exe
