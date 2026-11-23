@@ -1,6 +1,7 @@
 #include "welcomepage.h"
 #include "config.h"
 
+#include <QColor>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>

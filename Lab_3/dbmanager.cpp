@@ -133,11 +133,18 @@ bool DbManager::open(QString *errorText)
     }
     m_driver = driver;
 
+    // 复用已有连接对象：重连时不要 removeDatabase，否则会让已存在的 Model 持有失效句柄
+    QSqlDatabase database;
     if (QSqlDatabase::contains(QLatin1String(kConnectionName))) {
-        QSqlDatabase::removeDatabase(QLatin1String(kConnectionName));
+        database = QSqlDatabase::database(QLatin1String(kConnectionName), false);
+        if (database.isOpen()) {
+            m_open = true;
+            return true;
+        }
+        database.close();
+    } else {
+        database = QSqlDatabase::addDatabase(QStringLiteral("QODBC"), QLatin1String(kConnectionName));
     }
-
-    QSqlDatabase database = QSqlDatabase::addDatabase(QStringLiteral("QODBC"), QLatin1String(kConnectionName));
     const QString connStr =
         QStringLiteral("DRIVER={%1};SERVER=%2;PORT=%3;DATABASE=%4;UID=%5;PWD=%6;"
                        "OPTION=3;CHARSET=utf8mb4;")
@@ -172,13 +179,12 @@ bool DbManager::open(QString *errorText)
 
 void DbManager::close()
 {
+    // 只关闭，不移除连接名：进程退出前仍有 Model 持有句柄，
+    // 移除连接会触发 "connection is still in use" 警告。
     if (QSqlDatabase::contains(QLatin1String(kConnectionName))) {
-        {
-            QSqlDatabase database = QSqlDatabase::database(QLatin1String(kConnectionName), false);
-            if (database.isOpen())
-                database.close();
-        }
-        QSqlDatabase::removeDatabase(QLatin1String(kConnectionName));
+        QSqlDatabase database = QSqlDatabase::database(QLatin1String(kConnectionName), false);
+        if (database.isOpen())
+            database.close();
     }
     m_open = false;
 }
