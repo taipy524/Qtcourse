@@ -240,6 +240,8 @@ QString DbManager::translateError(const QString &raw)
     if (raw.isEmpty())
         return QStringLiteral("未知数据库错误。");
 
+    if (raw.contains(QStringLiteral("Data too long"), Qt::CaseInsensitive))
+        return QStringLiteral("字段长度超出限制，请缩短输入内容后重试。\n%1").arg(raw);
     if (raw.contains(QStringLiteral("Duplicate entry"), Qt::CaseInsensitive))
         return QStringLiteral("存在重复数据，保存失败。\n%1").arg(raw);
     if (raw.contains(QStringLiteral("foreign key constraint"), Qt::CaseInsensitive))

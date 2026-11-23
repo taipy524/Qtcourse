@@ -14,6 +14,7 @@
 #include <QSqlRecord>
 #include <QStackedWidget>
 #include <QTableView>
+#include <QTimer>
 #include <QToolBar>
 #include <QVBoxLayout>
 
@@ -140,6 +141,10 @@ PatientPage::PatientPage(QWidget *parent)
     });
 
     connect(m_model, &QAbstractItemModel::dataChanged, this, &PatientPage::onDataChanged);
+    m_editLogTimer = new QTimer(this);
+    m_editLogTimer->setSingleShot(true);
+    m_editLogTimer->setInterval(400);
+    connect(m_editLogTimer, &QTimer::timeout, this, &PatientPage::logInlineEdit);
     connect(m_proxy, &QAbstractItemModel::rowsInserted, this, [this] { updateState(); });
     connect(m_proxy, &QAbstractItemModel::rowsRemoved, this, [this] { updateState(); });
     connect(m_proxy, &QAbstractItemModel::modelReset, this, [this] { updateState(); });
@@ -242,6 +247,7 @@ void PatientPage::refresh()
         m_model->sort(createdColumn, Qt::DescendingOrder);
 
     m_proxy->invalidate();
+    m_view->resizeColumnsToContents();
     updateState();
 
     if (!m_lastSelectedId.isEmpty()) {
@@ -358,12 +364,25 @@ void PatientPage::onDataChanged(const QModelIndex &topLeft, const QModelIndex &b
 {
     Q_UNUSED(bottomRight)
 
-    const QModelIndex sourceIndex = m_proxy ? m_proxy->mapToSource(topLeft) : topLeft;
-    if (!sourceIndex.isValid())
+    // QSqlTableModel 的 setData + submit 可能连续触发两次 dataChanged，
+    // 用 400ms 防抖只写一条日志。
+    if (!topLeft.isValid())
+        return;
+    m_pendingEditIndex = QPersistentModelIndex(topLeft);
+    if (m_editLogTimer)
+        m_editLogTimer->start();
+}
+
+void PatientPage::logInlineEdit()
+{
+    if (!m_pendingEditIndex.isValid())
         return;
 
-    const QSqlRecord record = m_model->record(sourceIndex.row());
+    const QSqlRecord record = m_model->record(m_pendingEditIndex.row());
     const QString id = record.value(QStringLiteral("ID")).toString();
+    if (id.isEmpty())
+        return;
+
     if (!m_userId.isEmpty()) {
         DbManager::instance().logEvent(
             m_userId, QStringLiteral("表格内修改患者 %1 的性别").arg(id));

@@ -4,12 +4,14 @@
 #include <QWidget>
 #include <QSqlTableModel>
 #include <QSortFilterProxyModel>
+#include <QPersistentModelIndex>
 
 class QLabel;
 class QLineEdit;
 class QTableView;
 class QToolBar;
 class QStackedWidget;
+class QTimer;
 
 // 只允许在表格内直接编辑“性别”列，其余字段统一用对话框编辑
 class PatientTableModel : public QSqlTableModel
@@ -57,6 +59,7 @@ private slots:
     void editPatient();
     void deletePatient();
     void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void logInlineEdit();
 
 private:
     void buildUi();
@@ -72,6 +75,9 @@ private:
     QLabel             *m_emptyLabel = nullptr;
     QStackedWidget     *m_stack = nullptr;
     int                 m_sexColumn = -1;
+
+    QTimer             *m_editLogTimer = nullptr;
+    QPersistentModelIndex m_pendingEditIndex;
 
     QString m_userId;
     QString m_lastSelectedId;

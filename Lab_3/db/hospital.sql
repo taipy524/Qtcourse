@@ -9,6 +9,10 @@
 --  说明：脚本可重复执行（建库/建表/种子数据都是 IF NOT EXISTS / INSERT IGNORE），
 --        不会清空已有数据。如需彻底重建，先执行：
 --        DROP DATABASE IF EXISTS hospital;
+--
+--  字段长度说明：Qt 的 QODBC 绑定字符串参数时会比实际长度多算 1 个字符，
+--  因此字符串字段预留了余量（32 位 UUID 存 VARCHAR(36)，18 位身份证存 VARCHAR(20)），
+--  否则会报 "Data too long for column ..."。
 -- =============================================================================
 
 SET NAMES utf8mb4;
@@ -24,10 +28,10 @@ USE hospital;
 -- 1. 用户表（登录 / 注册）
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `User` (
-  ID        VARCHAR(32) NOT NULL COMMENT '用户ID（UUID）',
-  FULLNAME  VARCHAR(20) NOT NULL COMMENT '姓名',
-  USERNAME  VARCHAR(20) NOT NULL COMMENT '登录名',
-  PASSWORD  CHAR(64)    NOT NULL COMMENT 'SHA-256(明文) 的十六进制',
+  ID        VARCHAR(36) NOT NULL COMMENT '用户ID（UUID）',
+  FULLNAME  VARCHAR(24) NOT NULL COMMENT '姓名',
+  USERNAME  VARCHAR(24) NOT NULL COMMENT '登录名',
+  PASSWORD  VARCHAR(72) NOT NULL COMMENT 'SHA-256(明文) 的十六进制',
   PRIMARY KEY (ID),
   UNIQUE KEY uk_user_username (USERNAME)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '系统用户';
@@ -36,8 +40,8 @@ CREATE TABLE IF NOT EXISTS `User` (
 -- 2. 科室表（被医生表引用）
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Department (
-  ID    VARCHAR(8)  NOT NULL COMMENT '科室编号 DEP01…',
-  NAME  VARCHAR(30) NOT NULL COMMENT '科室名称',
+  ID    VARCHAR(12) NOT NULL COMMENT '科室编号 DEP01…',
+  NAME  VARCHAR(34) NOT NULL COMMENT '科室名称',
   PRIMARY KEY (ID),
   UNIQUE KEY uk_dept_name (NAME)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '科室';
@@ -46,10 +50,10 @@ CREATE TABLE IF NOT EXISTS Department (
 -- 3. 医生表（DEPARTMENT_ID 外键 -> Department.ID）
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Doctor (
-  ID             VARCHAR(32) NOT NULL COMMENT '医生ID（UUID）',
-  EMPLOYEE_NO    VARCHAR(20) NOT NULL COMMENT '工号',
-  NAME           VARCHAR(20) NOT NULL COMMENT '姓名',
-  DEPARTMENT_ID  VARCHAR(8)  NOT NULL COMMENT '所属科室',
+  ID             VARCHAR(36) NOT NULL COMMENT '医生ID（UUID）',
+  EMPLOYEE_NO    VARCHAR(24) NOT NULL COMMENT '工号',
+  NAME           VARCHAR(24) NOT NULL COMMENT '姓名',
+  DEPARTMENT_ID  VARCHAR(12) NOT NULL COMMENT '所属科室',
   PRIMARY KEY (ID),
   UNIQUE KEY uk_doctor_empno (EMPLOYEE_NO),
   KEY idx_doctor_dept (DEPARTMENT_ID),
@@ -64,14 +68,14 @@ CREATE TABLE IF NOT EXISTS Doctor (
 -- 4. 患者表（核心表：身份证唯一、字段长度按实际需要设置）
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Patient (
-  ID                VARCHAR(32)  NOT NULL COMMENT '患者ID（UUID）',
-  ID_CARD           CHAR(18)     NOT NULL COMMENT '身份证号',
-  NAME              VARCHAR(20)  NOT NULL COMMENT '姓名',
+  ID                VARCHAR(36)  NOT NULL COMMENT '患者ID（UUID）',
+  ID_CARD           VARCHAR(20)  NOT NULL COMMENT '身份证号',
+  NAME              VARCHAR(24)  NOT NULL COMMENT '姓名',
   SEX               TINYINT      NOT NULL DEFAULT 0 COMMENT '0未知 1男 2女',
   DOB               DATE         NULL COMMENT '出生日期',
   HEIGHT            DECIMAL(5,1) NULL COMMENT '身高 cm',
   WEIGHT            DECIMAL(5,1) NULL COMMENT '体重 kg',
-  MOBILEPHONE       CHAR(11)     NULL COMMENT '手机号',
+  MOBILEPHONE       VARCHAR(13)  NULL COMMENT '手机号',
   AGE               TINYINT UNSIGNED NULL COMMENT '年龄（由 DOB 计算写入）',
   CREATEDTIMESTAMP  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建档时间',
   PRIMARY KEY (ID),
@@ -88,9 +92,9 @@ CREATE TABLE IF NOT EXISTS Patient (
 -- 5. 操作日志表（只追加，保留审计链）
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS History (
-  ID           VARCHAR(32)  NOT NULL COMMENT '日志ID（UUID）',
-  USER_ID      VARCHAR(32)  NOT NULL COMMENT '操作人',
-  EVENT        VARCHAR(200) NOT NULL COMMENT '操作描述',
+  ID           VARCHAR(36)  NOT NULL COMMENT '日志ID（UUID）',
+  USER_ID      VARCHAR(36)  NOT NULL COMMENT '操作人',
+  EVENT        VARCHAR(220) NOT NULL COMMENT '操作描述',
   `TIMESTAMP`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发生时间',
   PRIMARY KEY (ID),
   KEY idx_history_user_time (USER_ID, `TIMESTAMP`),
